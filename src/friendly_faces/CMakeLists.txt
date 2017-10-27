@@ -24,6 +24,8 @@ catkin_package(
 include_directories(include/ ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
 
 add_executable(friendly_faces_runner
+	src/fps.cpp
+	src/image_proc.cpp
 	src/main.cpp
 )
 add_dependencies(friendly_faces_runner ${catkin_EXPORTED_TARGETS})

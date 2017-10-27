@@ -1,5 +1,4 @@
 #include "image_proc.h"
-#include "storage.h"
 
 FFFrameProcessor::FFFrameProcessor() {
 	if (!face_cascade.load("res/haarcascade_frontalface_default.xml")) {
