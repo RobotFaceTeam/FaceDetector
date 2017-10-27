@@ -13,6 +13,7 @@
 
 #include "image_proc.h"
 #include "fps.h"
+#include "net.h"
 
 using namespace tf;
 using namespace cv;
@@ -20,34 +21,19 @@ using namespace std;
 using namespace ros;
 using namespace cv_bridge;
 
-string greetings[] = {"hello", "hey there", "how are you", "nice to see you again"};
-int greetings_sz = 4;
-
-string goodbyes[] = {"good bye", "see you later", "bye", "I'll miss you"};
-int goodbyes_sz = 4;
-
-string doors[] = {"d3_414b1","d3_414b2", "d3_414a1", "d3_414a2"};
-int doors_sz = 4;
-
-//init
-
 //loop stuff
-bool idle = true;
 FFFrameProcessor frame_proc;
 FPSCounter fps;
 Mat frame;
 VideoCapture cap(0);
+UDPBroadcast bcast;
 
 class SegbotProcessor {
 private:
-	bool processing = true;
 	image_transport::ImageTransport it;
 	image_transport::Subscriber image_sub;
-	
 
-	bool first = true;
-	bool killed = false;
-	double lastIdle = -1;
+	bool processing = false;
 
 	void callback(const sensor_msgs::ImageConstPtr& msg) {
 		if (!processing) {
@@ -62,25 +48,19 @@ private:
 			return;
 		}
 		
-		//run(cv_ptr->image.clone());
+		run(cv_ptr->image.clone());
 	}
 
 public:
 	void run(Mat frame) {
 		Mat outputFrame = frame.clone();
 		Point2i faces = frame_proc.process(frame);
-		
-		//for (auto elem : faces) {
-		//rectangle(outputFrame, elem.first, Scalar(0, 255, 0));
+
 		circle(outputFrame, faces, 5, Scalar(0, 255, 0));
-		//}
-		
+
 		imshow("cam", outputFrame);
 
-
-		if (waitKey(10) >= 0) {
-			processing = false;
-		}
+		bcast.send("3,2,1,6,5,4");
 	}
 	
 	SegbotProcessor(NodeHandle& nh) : it(nh) {

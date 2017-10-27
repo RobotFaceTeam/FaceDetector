@@ -16,7 +16,3 @@ public:
 
 	Point2i process(Mat frame);
 };
-
-double frameCompare(Mat frame1, Mat frame2);
-
-bool vector_contains(vector<pair<Rect, string>> vec, pair<Rect, string> elem);
