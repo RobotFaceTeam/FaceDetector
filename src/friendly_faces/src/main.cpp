@@ -36,13 +36,7 @@ private:
 	image_transport::Subscriber image_sub;
 	ros::Subscriber vis_sub;
 
-	bool processing = false;
-
 	void callback(const sensor_msgs::ImageConstPtr& msg) {
-		if (!processing) {
-			return;
-		}
-
 		CvImagePtr cv_ptr;
 		try {
 			cv_ptr = toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
@@ -71,10 +65,7 @@ public:
 	}
 	
 	SegbotProcessor(NodeHandle& nh) : it(nh) {
-		processing = true;
 		vis_sub = nh.subscribe("visualization_marker", 1, &SegbotProcessor::vis_callback, this);
-		//image_sub = it.subscribe("/gscam/image_raw", 1, &SegbotProcessor::callback, this);
-
 	}
 };
 
