@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
 	std_msgs
 	message_generation
 	geometry_msgs
+	visualization_msgs
 )
 
 catkin_package(

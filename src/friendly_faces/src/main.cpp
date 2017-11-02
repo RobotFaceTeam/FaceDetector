@@ -15,6 +15,8 @@
 #include "fps.h"
 #include "net.h"
 
+#include "visualization_msgs/Marker.h"
+
 using namespace tf;
 using namespace cv;
 using namespace std;
@@ -32,6 +34,7 @@ class SegbotProcessor {
 private:
 	image_transport::ImageTransport it;
 	image_transport::Subscriber image_sub;
+	ros::Subscriber vis_sub;
 
 	bool processing = false;
 
@@ -50,6 +53,10 @@ private:
 		
 		run(cv_ptr->image.clone());
 	}
+	
+	void vis_callback(const visualization_msgs::Marker& msg) {
+		printf("%s\n", msg.ns.c_str());
+	}
 
 public:
 	void run(Mat frame) {
@@ -65,7 +72,7 @@ public:
 	
 	SegbotProcessor(NodeHandle& nh) : it(nh) {
 		processing = true;
-		//image_sub = it.subscribe("/nav_kinect/rgb/image_raw", 1, &SegbotProcessor::callback, this);
+		vis_sub = nh.subscribe("visualization_marker", 1, &SegbotProcessor::vis_callback, this);
 		//image_sub = it.subscribe("/gscam/image_raw", 1, &SegbotProcessor::callback, this);
 
 	}
