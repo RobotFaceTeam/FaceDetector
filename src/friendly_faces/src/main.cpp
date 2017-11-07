@@ -37,14 +37,9 @@ private:
 	image_transport::ImageTransport it;
 	image_transport::Subscriber image_sub;
 	ros::Subscriber vis_sub;
-
-	bool processing = false;
+	bool processing;
 
 	void callback(const sensor_msgs::ImageConstPtr& msg) {
-		if (!processing) {
-			return;
-		}
-
 		CvImagePtr cv_ptr;
 		try {
 			cv_ptr = toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
@@ -113,7 +108,6 @@ public:
 		processing = true;
 		//vis_sub = nh.subscribe("/image_raw", 1, &SegbotProcessor::vis_callback, this);
 		image_sub = it.subscribe("/image_raw", 1, &SegbotProcessor::callback, this);
-
 	}
 };
 
