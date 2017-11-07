@@ -27,8 +27,10 @@ using namespace cv_bridge;
 FFFrameProcessor frame_proc;
 FPSCounter fps;
 Mat frame;
-VideoCapture cap(0);
 UDPBroadcast bcast;
+
+//3 rigid transformations <(eye1_pos, eye2_pos, head_pos), (eye1_rot, eye2_rot, head_rot)>
+typedef pair<tuple<Vector3, Vector3, Vector3>, tuple<Vector3, Vector3, Vector3>> tri_rigid;
 
 class SegbotProcessor {
 private:
@@ -57,23 +59,60 @@ private:
 	void vis_callback(const visualization_msgs::Marker& msg) {
 		printf("%s\n", msg.ns.c_str());
 	}
+	
+	void img_callback(const visualization_msgs::Marker& msg) {
+		printf("%s\n", msg.ns.c_str());
+	}
+	
+	//justin's math to convert virtual to physical coordinates
+	Vector3 v2p(Vector3& v) {
+		return v;
+	}
+	
+	//math that converts physical coordinates to 3 rigid transformations (position & rotation)
+	tri_rigid math(Vector3& p) {
+		tri_rigid vv;
+		return vv;
+	}
 
 public:
 	void run(Mat frame) {
 		Mat outputFrame = frame.clone();
-		Point2i faces = frame_proc.process(frame);
-
-		circle(outputFrame, faces, 5, Scalar(0, 255, 0));
+		/*Point2i faces = frame_proc.process(frame);
+		
+		Vector3 v(0, 0, 0);
+		
+		Vector3 vCoords = v2p(v);
+		
+		tri_rigid set = math(vCoords);
+		
+		//"3,2,1,3,2,1,3,2,1,3,2,1"
+		char buffer [100];
+		sprintf(buffer, "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f", std::get<0>(set.first).m_floats[0],std::get<0>(set.first).m_floats[1],std::get<0>(set.first).m_floats[2],
+		                                                                     std::get<1>(set.first).m_floats[0],std::get<1>(set.first).m_floats[1],std::get<1>(set.first).m_floats[2],
+		                                                                     std::get<2>(set.first).m_floats[0],std::get<2>(set.first).m_floats[1],std::get<2>(set.first).m_floats[2],
+		                                                                     std::get<0>(set.second).m_floats[0],std::get<0>(set.second).m_floats[1],std::get<0>(set.second).m_floats[2],
+		                                                                     std::get<1>(set.second).m_floats[0],std::get<1>(set.second).m_floats[1],std::get<1>(set.second).m_floats[2],
+		                                                                     std::get<2>(set.second).m_floats[0],std::get<2>(set.second).m_floats[1],std::get<2>(set.second).m_floats[2]);
+		//bcast.send(buffer);
+		printf(buffer);
+		
+		//display
+		circle(outputFrame, faces, 5, Scalar(0, 255, 0));*/
 
 		imshow("cam", outputFrame);
-
-		bcast.send("3,2,1,6,5,4");
+		
+		if (waitKey(50) > 0) {
+			processing = false;
+			destroyAllWindows();
+			shutdown();
+		}
 	}
 	
 	SegbotProcessor(NodeHandle& nh) : it(nh) {
 		processing = true;
-		vis_sub = nh.subscribe("visualization_marker", 1, &SegbotProcessor::vis_callback, this);
-		//image_sub = it.subscribe("/gscam/image_raw", 1, &SegbotProcessor::callback, this);
+		//vis_sub = nh.subscribe("/image_raw", 1, &SegbotProcessor::vis_callback, this);
+		image_sub = it.subscribe("/image_raw", 1, &SegbotProcessor::callback, this);
 
 	}
 };
@@ -84,20 +123,15 @@ int main(int argc, char** argv) {
 	printf("CXX Standard:   %li\n", __cplusplus);
 	printf("OpenCV Version: %s\n", CV_VERSION);
 
+	namedWindow("cam");
+	
+	startWindowThread();
+
 	NodeHandle nh;
 
 	SegbotProcessor sp(nh);
-	bool running = true;
-	while (running) {
-		Mat frame;
-		cap >> frame;
-		sp.run(frame);
-		
-		if (cvWaitKey(10) >= 0) {
-			cvDestroyWindow("cam");
-			running = false;
-		}
-	}
+	
+	spin();
 
 	return 0;
 }
