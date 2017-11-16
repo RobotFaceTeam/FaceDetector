@@ -38,6 +38,6 @@ Point2i FFFrameProcessor::process(Mat frame) {
 		return Point2i(x,y);
 	}
 
-	return Point2i(320,240);
+	return Point2i();
 }
 

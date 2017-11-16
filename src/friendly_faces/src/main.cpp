@@ -28,6 +28,8 @@ FFFrameProcessor frame_proc;
 FPSCounter fps;
 Mat frame;
 UDPBroadcast bcast;
+VideoCapture cap(0);
+Point2i faces = Point2i(320,240);
 
 //3 rigid transformations <(eye1_pos, eye2_pos, head_pos), (eye1_rot, eye2_rot, head_rot)>
 typedef pair<tuple<Vector3, Vector3, Vector3>, tuple<Vector3, Vector3, Vector3>> tri_rigid;
@@ -72,8 +74,15 @@ private:
 
 public:
 	void run(Mat frame) {
+		if (frame.empty()) {
+			return;
+		}
 		Mat outputFrame = frame.clone();
-		/*Point2i faces = frame_proc.process(frame);
+		Point2i newFaces = frame_proc.process(frame);
+		if (newFaces != Point2i()) {
+			faces = newFaces;
+		}
+		
 		
 		Vector3 v(0, 0, 0);
 		
@@ -81,8 +90,10 @@ public:
 		
 		tri_rigid set = math(vCoords);
 		
+		
 		//"3,2,1,3,2,1,3,2,1,3,2,1"
-		char buffer [100];
+		char buffer [1000];
+		
 		sprintf(buffer, "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f", std::get<0>(set.first).m_floats[0],std::get<0>(set.first).m_floats[1],std::get<0>(set.first).m_floats[2],
 		                                                                     std::get<1>(set.first).m_floats[0],std::get<1>(set.first).m_floats[1],std::get<1>(set.first).m_floats[2],
 		                                                                     std::get<2>(set.first).m_floats[0],std::get<2>(set.first).m_floats[1],std::get<2>(set.first).m_floats[2],
@@ -90,14 +101,15 @@ public:
 		                                                                     std::get<1>(set.second).m_floats[0],std::get<1>(set.second).m_floats[1],std::get<1>(set.second).m_floats[2],
 		                                                                     std::get<2>(set.second).m_floats[0],std::get<2>(set.second).m_floats[1],std::get<2>(set.second).m_floats[2]);
 		//bcast.send(buffer);
-		printf(buffer);
+		//printf(buffer);
+		
 		
 		//display
-		circle(outputFrame, faces, 5, Scalar(0, 255, 0));*/
+		circle(outputFrame, faces, 5, Scalar(0, 255, 0));
 
 		imshow("cam", outputFrame);
 		
-		if (waitKey(50) > 0) {
+		if (waitKey(25) > 0) {
 			processing = false;
 			destroyAllWindows();
 			shutdown();
@@ -107,7 +119,7 @@ public:
 	SegbotProcessor(NodeHandle& nh) : it(nh) {
 		processing = true;
 		//vis_sub = nh.subscribe("/image_raw", 1, &SegbotProcessor::vis_callback, this);
-		image_sub = it.subscribe("/image_raw", 1, &SegbotProcessor::callback, this);
+		//image_sub = it.subscribe("/image_raw", 1, &SegbotProcessor::callback, this);
 	}
 };
 
@@ -125,7 +137,12 @@ int main(int argc, char** argv) {
 
 	SegbotProcessor sp(nh);
 	
-	spin();
+	while (ok()) {
+		Mat frame;
+		cap.read(frame);
+		sp.run(frame);
+		spinOnce();
+	}
 
 	return 0;
 }
