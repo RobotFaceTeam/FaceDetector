@@ -29,7 +29,7 @@ FPSCounter fps;
 Mat frame;
 UDPBroadcast bcast;
 VideoCapture cap(0);
-Point2i faces = Point2i(320,240);
+Point2i faces = Point2i(0,0);
 
 //3 rigid transformations <(eye1_pos, eye2_pos, head_pos), (eye1_rot, eye2_rot, head_rot)>
 typedef pair<tuple<Vector3, Vector3, Vector3>, tuple<Vector3, Vector3, Vector3>> tri_rigid;
@@ -83,8 +83,9 @@ public:
 			faces = newFaces;
 		}
 		
+		//printf("xProportion:%f, yProportion:%f\n", ((double)faces.x/frame.size().width), ((double)faces.y/frame.size().height));
 		
-		Vector3 v(0, 0, 0);
+		/*Vector3 v(0, 0, 0);
 		
 		Vector3 vCoords = v2p(v);
 		
@@ -99,9 +100,12 @@ public:
 		                                                                     std::get<2>(set.first).m_floats[0],std::get<2>(set.first).m_floats[1],std::get<2>(set.first).m_floats[2],
 		                                                                     std::get<0>(set.second).m_floats[0],std::get<0>(set.second).m_floats[1],std::get<0>(set.second).m_floats[2],
 		                                                                     std::get<1>(set.second).m_floats[0],std::get<1>(set.second).m_floats[1],std::get<1>(set.second).m_floats[2],
-		                                                                     std::get<2>(set.second).m_floats[0],std::get<2>(set.second).m_floats[1],std::get<2>(set.second).m_floats[2]);
-		//bcast.send(buffer);
-		//printf(buffer);
+		                                                                     std::get<2>(set.second).m_floats[0],std::get<2>(set.second).m_floats[1],std::get<2>(set.second).m_floats[2]);*/
+		                                                                     
+		char buffer [100];
+		sprintf(buffer, "%f,%f", ((1 -(double)faces.x/frame.size().width)), ((double)faces.y/frame.size().height) * -1);
+		bcast.send(buffer);
+		//printf("%s\n", buffer);
 		
 		
 		//display
