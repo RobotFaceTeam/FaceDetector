@@ -15,7 +15,7 @@ Point2i FFFrameProcessor::process(Mat frame) {
 	vector<Rect> FR_faces;
 
 	Mat process;
-	resize(frame, process, Size(160, 120));
+	resize(frame, process, Size(160, 140));
 
 	Mat frame_gray;
 	cvtColor(process, frame_gray, COLOR_BGR2GRAY);
@@ -30,6 +30,7 @@ Point2i FFFrameProcessor::process(Mat frame) {
 		faceRect.width *= upscale;
 		faceRect.height *= upscale;
 	});*/
+
 	if (FR_faces.size() >= 1) {
 		int x = FR_faces[0].width/2 + FR_faces[0].x;
 		int y = FR_faces[0].height/2 + FR_faces[0].y;

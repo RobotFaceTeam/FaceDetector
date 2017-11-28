@@ -3,7 +3,7 @@
 UDPBroadcast::UDPBroadcast() : socket(io_service, budp::endpoint(budp::v4(), 0)) {
 	budp::resolver reslv(io_service);
 	budp::resolver::query q(budp::v4(),
-		"localhost", "8081");
+		boost::asio::ip::host_name(), "8081");
 	budp::resolver::iterator iter = reslv.resolve(q);
 	endp = *iter;
 }

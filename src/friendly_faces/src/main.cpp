@@ -82,38 +82,21 @@ public:
 		if (newFaces != Point2i()) {
 			faces = newFaces;
 		}
-		
-		//printf("xProportion:%f, yProportion:%f\n", ((double)faces.x/frame.size().width), ((double)faces.y/frame.size().height));
-		
-		/*Vector3 v(0, 0, 0);
-		
-		Vector3 vCoords = v2p(v);
-		
-		tri_rigid set = math(vCoords);
-		
-		
-		//"3,2,1,3,2,1,3,2,1,3,2,1"
-		char buffer [1000];
-		
-		sprintf(buffer, "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f", std::get<0>(set.first).m_floats[0],std::get<0>(set.first).m_floats[1],std::get<0>(set.first).m_floats[2],
-		                                                                     std::get<1>(set.first).m_floats[0],std::get<1>(set.first).m_floats[1],std::get<1>(set.first).m_floats[2],
-		                                                                     std::get<2>(set.first).m_floats[0],std::get<2>(set.first).m_floats[1],std::get<2>(set.first).m_floats[2],
-		                                                                     std::get<0>(set.second).m_floats[0],std::get<0>(set.second).m_floats[1],std::get<0>(set.second).m_floats[2],
-		                                                                     std::get<1>(set.second).m_floats[0],std::get<1>(set.second).m_floats[1],std::get<1>(set.second).m_floats[2],
-		                                                                     std::get<2>(set.second).m_floats[0],std::get<2>(set.second).m_floats[1],std::get<2>(set.second).m_floats[2]);*/
-		                                                                     
-		char buffer [100];
-		sprintf(buffer, "%f,%f", ((1 -(double)faces.x/frame.size().width)), ((double)faces.y/frame.size().height) * -1);
-		bcast.send(buffer);
-		//printf("%s\n", buffer);
-		
-		
+
 		//display
 		circle(outputFrame, faces, 5, Scalar(0, 255, 0));
 
+		//UDP
+		faces.x *= 2;
+		faces.y *= 2;
+		string send = to_string(faces.x) + "," + to_string(faces.y);
+		printf("%s\n", send.c_str());
+		bcast.send(send.c_str());
+
+		//frame
 		imshow("cam", outputFrame);
 		
-		if (waitKey(25) > 0) {
+		if (waitKey(25) != 255) {
 			processing = false;
 			destroyAllWindows();
 			shutdown();
