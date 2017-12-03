@@ -77,18 +77,35 @@ public:
 		if (frame.empty()) {
 			return;
 		}
+		
 		Mat outputFrame = frame.clone();
-		Point2i newFaces = frame_proc.process(frame);
-		if (newFaces != Point2i()) {
-			faces = newFaces;
+		vector<Rect> newFaces = frame_proc.process(frame);
+		if (newFaces.size() >= 1) {
+			faces = Point2i(newFaces[0].width/2 + newFaces[0].x, newFaces[0].height/2 + newFaces[0].y);
 		}
 
 		//display
-		circle(outputFrame, faces, 5, Scalar(0, 255, 0));
+		if (newFaces.size() <= 1) {
+		    circle(outputFrame, faces, 5, Scalar(0, 255, 0));
+		}
+		else if (newFaces.size() == 2) {
+			Point2i higher;
+			Point2i lower;
+			if (newFaces[0].height/2 + newFaces[0].y < newFaces[1].height/2 + newFaces[1].y) {
+				higher = Point2i(newFaces[0].width/2 + newFaces[0].x, newFaces[0].height/2 + newFaces[0].y);
+				lower = Point2i(newFaces[1].width/2 + newFaces[1].x, newFaces[1].height/2 + newFaces[1].y);
+			}
+			else {
+				higher = Point2i(newFaces[1].width/2 + newFaces[1].x, newFaces[1].height/2 + newFaces[1].y);
+				lower = Point2i(newFaces[0].width/2 + newFaces[0].x, newFaces[0].height/2 + newFaces[0].y);
+			}
+			circle(outputFrame, higher, 5, Scalar(255, 0, 0));
+			circle(outputFrame, lower, 5, Scalar(0, 0, 255));
+		}
 
 		//UDP
-		faces.x *= 2;
-		faces.y *= 2;
+		//faces.x *= 2;
+		//faces.y *= 2;
 		string send = to_string(faces.x) + "," + to_string(faces.y);
 		printf("%s\n", send.c_str());
 		bcast.send(send.c_str());
@@ -96,7 +113,7 @@ public:
 		//frame
 		imshow("cam", outputFrame);
 		
-		if (waitKey(25) != 255) {
+		if (waitKey(25) == 120) {
 			processing = false;
 			destroyAllWindows();
 			shutdown();

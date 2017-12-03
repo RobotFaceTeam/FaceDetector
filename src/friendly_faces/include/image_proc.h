@@ -14,5 +14,5 @@ private:
 public:
 	FFFrameProcessor();
 
-	Point2i process(Mat frame);
+	vector<Rect> process(Mat frame);
 };
