@@ -89,18 +89,34 @@ public:
 		    circle(outputFrame, faces, 5, Scalar(0, 255, 0));
 		}
 		else if (newFaces.size() == 2) {
-			Point2i higher;
-			Point2i lower;
-			if (newFaces[0].height/2 + newFaces[0].y < newFaces[1].height/2 + newFaces[1].y) {
-				higher = Point2i(newFaces[0].width/2 + newFaces[0].x, newFaces[0].height/2 + newFaces[0].y);
-				lower = Point2i(newFaces[1].width/2 + newFaces[1].x, newFaces[1].height/2 + newFaces[1].y);
+			if (false) {
+				Point2i higher;
+				Point2i lower;
+				if (newFaces[0].height/2 + newFaces[0].y < newFaces[1].height/2 + newFaces[1].y) {
+					higher = Point2i(newFaces[0].width/2 + newFaces[0].x, newFaces[0].height/2 + newFaces[0].y);
+					lower = Point2i(newFaces[1].width/2 + newFaces[1].x, newFaces[1].height/2 + newFaces[1].y);
+				}
+				else {
+					higher = Point2i(newFaces[1].width/2 + newFaces[1].x, newFaces[1].height/2 + newFaces[1].y);
+					lower = Point2i(newFaces[0].width/2 + newFaces[0].x, newFaces[0].height/2 + newFaces[0].y);
+				}
+				circle(outputFrame, higher, 5, Scalar(255, 0, 0));
+				circle(outputFrame, lower, 5, Scalar(0, 0, 255));
 			}
 			else {
-				higher = Point2i(newFaces[1].width/2 + newFaces[1].x, newFaces[1].height/2 + newFaces[1].y);
-				lower = Point2i(newFaces[0].width/2 + newFaces[0].x, newFaces[0].height/2 + newFaces[0].y);
+				Point2i left;
+				Point2i right;
+				if (newFaces[0].width/2 + newFaces[0].x < newFaces[1].width/2 + newFaces[1].x) {
+					left = Point2i(newFaces[0].width/2 + newFaces[0].x, newFaces[0].height/2 + newFaces[0].y);
+					right = Point2i(newFaces[1].width/2 + newFaces[1].x, newFaces[1].height/2 + newFaces[1].y);
+				}
+				else {
+					left = Point2i(newFaces[1].width/2 + newFaces[1].x, newFaces[1].height/2 + newFaces[1].y);
+					right = Point2i(newFaces[0].width/2 + newFaces[0].x, newFaces[0].height/2 + newFaces[0].y);
+				}
+				circle(outputFrame, left, 5, Scalar(255, 0, 0));
+				circle(outputFrame, right, 5, Scalar(0, 0, 255));
 			}
-			circle(outputFrame, higher, 5, Scalar(255, 0, 0));
-			circle(outputFrame, lower, 5, Scalar(0, 0, 255));
 		}
 
 		//UDP
@@ -115,6 +131,9 @@ public:
 		
 		if (waitKey(25) == 120) {
 			processing = false;
+			string send = to_string(frame.cols/2) + "," + to_string(frame.rows/2);
+			printf("%s\n", send.c_str());
+			bcast.send(send.c_str());
 			destroyAllWindows();
 			shutdown();
 		}
