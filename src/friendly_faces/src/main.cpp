@@ -121,10 +121,12 @@ public:
 		}
 
 		//UDP
-		//faces.x *= 2;
-		//faces.y *= 2;
 		double nx = (2.0 * faces.x / outputFrame.cols) - 1;
 		double ny = 1 - (2.0 * faces.y / outputFrame.rows);
+
+		nx *= 2.5;
+		ny *= 2.5;
+
 		string send = to_string(nx) + "," + to_string(ny);
 		printf("%s\n", send.c_str());
 		bcast.send(send.c_str());
