@@ -1,6 +1,7 @@
 #include <string>
 #include <algorithm>
 #include <stdio.h>
+#include <cmath>
 
 #include "tf/tf.h"
 #include "tf/transform_listener.h"
@@ -122,7 +123,9 @@ public:
 		//UDP
 		//faces.x *= 2;
 		//faces.y *= 2;
-		string send = to_string(faces.x) + "," + to_string(faces.y);
+		double nx = (2.0 * faces.x / outputFrame.cols) - 1;
+		double ny = 1 - (2.0 * faces.y / outputFrame.rows);
+		string send = to_string(nx) + "," + to_string(ny);
 		printf("%s\n", send.c_str());
 		bcast.send(send.c_str());
 
@@ -131,7 +134,7 @@ public:
 		
 		if (waitKey(25) == 120) {
 			processing = false;
-			string send = to_string(frame.cols/2) + "," + to_string(frame.rows/2);
+			string send = "0,0";
 			printf("%s\n", send.c_str());
 			bcast.send(send.c_str());
 			destroyAllWindows();
