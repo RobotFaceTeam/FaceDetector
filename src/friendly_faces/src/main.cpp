@@ -126,11 +126,11 @@ public:
 				}
 				if (choose == 0) {
 					faces = left;
-					printf("left\n");
+					printf("left: %d\n", choose);
 				}
 				else {
 					faces = right;
-					printf("right\n");
+					printf("right: %d\n", choose);
 				}
 				circle(outputFrame, left, 5, Scalar(255, 0, 0));
 				circle(outputFrame, right, 5, Scalar(0, 0, 255));
@@ -182,6 +182,7 @@ int main(int argc, char** argv) {
 
 	SegbotProcessor sp(nh);
 	
+	srand (time(NULL));
 	choose = rand() % 2;
 	
 	while (ok()) {
