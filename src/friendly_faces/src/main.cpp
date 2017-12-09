@@ -104,9 +104,11 @@ public:
 				}
 				if (choose == 0) {
 					faces = lower;
+					printf("lower\n");
 				}
 				else {
 					faces = higher;
+					printf("higher\n");
 				}
 				circle(outputFrame, higher, 5, Scalar(255, 0, 0));
 				circle(outputFrame, lower, 5, Scalar(0, 0, 255));
@@ -124,9 +126,11 @@ public:
 				}
 				if (choose == 0) {
 					faces = left;
+					printf("left\n");
 				}
 				else {
 					faces = right;
+					printf("right\n");
 				}
 				circle(outputFrame, left, 5, Scalar(255, 0, 0));
 				circle(outputFrame, right, 5, Scalar(0, 0, 255));
