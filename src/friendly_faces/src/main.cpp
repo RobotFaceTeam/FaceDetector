@@ -31,6 +31,7 @@ Mat frame;
 UDPBroadcast bcast;
 VideoCapture cap(0);
 Point2i faces = Point2i(0,0);
+int choose;
 
 //3 rigid transformations <(eye1_pos, eye2_pos, head_pos), (eye1_rot, eye2_rot, head_rot)>
 typedef pair<tuple<Vector3, Vector3, Vector3>, tuple<Vector3, Vector3, Vector3>> tri_rigid;
@@ -90,7 +91,7 @@ public:
 		    circle(outputFrame, faces, 5, Scalar(0, 255, 0));
 		}
 		else if (newFaces.size() == 2) {
-			if (false) {
+			if (false) { //true for higher/lower, false for left/right
 				Point2i higher;
 				Point2i lower;
 				if (newFaces[0].height/2 + newFaces[0].y < newFaces[1].height/2 + newFaces[1].y) {
@@ -100,6 +101,14 @@ public:
 				else {
 					higher = Point2i(newFaces[1].width/2 + newFaces[1].x, newFaces[1].height/2 + newFaces[1].y);
 					lower = Point2i(newFaces[0].width/2 + newFaces[0].x, newFaces[0].height/2 + newFaces[0].y);
+				}
+				if (choose == 0) {
+					faces = lower;
+					printf("lower\n");
+				}
+				else {
+					faces = higher;
+					printf("higher\n");
 				}
 				circle(outputFrame, higher, 5, Scalar(255, 0, 0));
 				circle(outputFrame, lower, 5, Scalar(0, 0, 255));
@@ -114,6 +123,14 @@ public:
 				else {
 					left = Point2i(newFaces[1].width/2 + newFaces[1].x, newFaces[1].height/2 + newFaces[1].y);
 					right = Point2i(newFaces[0].width/2 + newFaces[0].x, newFaces[0].height/2 + newFaces[0].y);
+				}
+				if (choose == 0) {
+					faces = left;
+					printf("left: %d\n", choose);
+				}
+				else {
+					faces = right;
+					printf("right: %d\n", choose);
 				}
 				circle(outputFrame, left, 5, Scalar(255, 0, 0));
 				circle(outputFrame, right, 5, Scalar(0, 0, 255));
@@ -164,6 +181,9 @@ int main(int argc, char** argv) {
 	NodeHandle nh;
 
 	SegbotProcessor sp(nh);
+	
+	srand (time(NULL));
+	choose = rand() % 2;
 	
 	while (ok()) {
 		Mat frame;
