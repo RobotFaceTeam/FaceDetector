@@ -141,11 +141,16 @@ public:
 		double nx = (2.0 * faces.x / outputFrame.cols) - 1;
 		double ny = 1 - (2.0 * faces.y / outputFrame.rows);
 
-		nx = -nx * nx * nx;
-		ny *= ny * ny * ny;
+		nx = -nx * nx * nx - 0.561516;
+		ny = (ny * ny * ny) - 0.296296;
+
+		nx *= 2;
+		ny *= 2;
+
+		
 
 		string send = to_string(nx) + "," + to_string(ny);
-		printf("%s\n", send.c_str());
+		//printf("%s\n", send.c_str());
 		bcast.send(send.c_str());
 
 		//frame
